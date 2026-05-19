@@ -130,7 +130,6 @@
             <option>Warehouse</option>
             <option>Finance</option>
             <option>Marketing</option>
-            <option>Operation</option>
             <option>Other</option>
           </select>
         </div>
@@ -188,7 +187,7 @@
       const dlStr = dl ? dl.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
       const statusKey = (p.status||'notstarted').toLowerCase().replace(/\s/g,'');
       const priKey = (p.priority||'medium').toLowerCase();
-      const params = new URLSearchParams({id:p.id, project:p.project, assignee:p.assignee, team:p.team, deadline:p.deadline||''});
+      const params = new URLSearchParams({id:p.id, project:p.project, assignee:p.assignee, team:p.team, deadline:p.deadline||'', description:p.description||''});
       const updateLink = UPDATE_FORM_BASE + '?' + params.toString();
       return `<div class="project-row">
         <div class="project-info">
@@ -241,7 +240,7 @@
     saveProjects();
     renderProjects();
 
-    const params = new URLSearchParams({id:payload.id, project:payload.project, assignee:payload.assignee, team:payload.team, deadline:payload.deadline||''});
+    const params = new URLSearchParams({id:payload.id, project:payload.project, assignee:payload.assignee, team:payload.team, deadline:payload.deadline||'', description:payload.description||''});
     const link = UPDATE_FORM_BASE + '?' + params.toString();
     msg.innerHTML = `✓ Project created! Send this link to <strong>${esc(payload.assignee)}</strong>:<br><span style="font-family:var(--mono);font-size:12px;word-break:break-all;color:#1a1917">${esc(link)}</span>`;
     msg.classList.add('show');
