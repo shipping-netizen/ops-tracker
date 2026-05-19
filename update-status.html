@@ -170,28 +170,19 @@
     };
 
     try {
-      // Use iframe form POST to bypass CORS
-      let iframe = document.getElementById('hidden_iframe');
-      if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.name = 'hidden_iframe';
-        iframe.id = 'hidden_iframe';
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-      }
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = APPS_SCRIPT_URL;
-      form.target = 'hidden_iframe';
-      form.style.display = 'none';
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'postData';
-      input.value = JSON.stringify(payload);
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
-      setTimeout(() => document.body.removeChild(form), 1000);
+      // Use GET request with URL params to bypass CORS
+      const params = new URLSearchParams({
+        id: payload.id,
+        project: payload.project || '',
+        assignee: payload.assignee || '',
+        team: payload.team || '',
+        deadline: payload.deadline || '',
+        status: payload.status || '',
+        update: payload.update || '',
+        blocker: payload.blocker || ''
+      });
+      const img = new Image();
+      img.src = APPS_SCRIPT_URL + '?' + params.toString();
     } catch(err) { console.warn('Submit error', err); }
 
     document.getElementById('formCard').style.display = 'none';
