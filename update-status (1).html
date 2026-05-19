@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Update Project Status</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0; --surface: #fff; --border: #e2e0d8;
+    --text: #1a1917; --muted: #7a7870;
+    --accent: #2563eb; --accent-light: #eff4ff;
+    --danger: #dc2626; --success: #16a34a;
+    --radius: 10px; --mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 48px 16px; }
+  .header { width: 100%; max-width: 520px; margin-bottom: 28px; }
+  .brand { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 14px; }
+  .project-card { background: var(--accent-light); border: 1px solid #c7d9fd; border-radius: var(--radius); padding: 18px 20px; margin-bottom: 8px; }
+  .project-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-bottom: 6px; }
+  .project-name { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 10px; }
+  .project-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--accent); }
+  .desc-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 24px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 520px; }
+  .section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 14px; }
+  .status-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
+  .status-opt { display: none; }
+  .status-label { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--muted); transition: all .15s; }
+  .status-label:hover { border-color: var(--accent); color: var(--text); }
+  .status-opt:checked + .status-label { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+  .status-icon { font-size: 18px; }
+  .field { margin-bottom: 18px; }
+  label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  label .req { color: var(--danger); margin-left: 2px; }
+  textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 7px; padding: 10px 13px; outline: none; transition: border-color .15s, box-shadow .15s; resize: vertical; min-height: 90px; line-height: 1.5; }
+  textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.1); background: #fff; }
+  .blocker-field { display: none; }
+  .blocker-field.show { display: block; }
+  .divider { height: 1px; background: var(--border); margin: 22px 0; }
+  .btn { width: 100%; padding: 13px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; border: none; border-radius: 8px; cursor: pointer; transition: opacity .15s; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { opacity: .9; }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .success-screen { display: none; text-align: center; padding: 40px 20px; }
+  .success-screen.show { display: block; }
+  .success-icon { font-size: 48px; margin-bottom: 16px; }
+  .success-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .success-sub { font-size: 14px; color: var(--muted); }
+  .update-again { font-size: 13px; color: var(--accent); cursor: pointer; margin-top: 20px; text-decoration: underline; background: none; border: none; }
+  .no-project { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+  .no-project strong { display: block; font-size: 16px; color: var(--text); margin-bottom: 8px; }
+  .deadline-overdue { color: #dc2626; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div id="noProject" class="no-project" style="display:none">
+  <strong>No project found</strong>
+  This link doesn't have a project attached. Ask your manager to resend the correct link.
+</div>
+
+<div id="mainContent" style="width:100%;max-width:520px;display:none">
+  <div class="header">
+    <div class="brand">Ops Hub · Project update</div>
+    <div class="project-card">
+      <div class="project-label">Your assignment</div>
+      <div class="project-name" id="projectName">—</div>
+      <div class="project-meta">
+        <span>👤 <span id="assigneeName">—</span></span>
+        <span>🏷 <span id="teamName">—</span></span>
+        <span id="deadlineMeta">📅 <span id="deadlineDisplay">—</span></span>
+      </div>
+    </div>
+    <div class="desc-card" id="descCard" style="display:none">
+      <strong style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Instructions</strong><br>
+      <span id="descText"></span>
+    </div>
+  </div>
+
+  <div class="card" id="formCard">
+    <div class="section-title">How's it going?</div>
+    <div class="status-grid">
+      <input type="radio" name="status" value="Not started" id="s0" class="status-opt">
+      <label for="s0" class="status-label"><span class="status-icon">⚪</span>Not started yet</label>
+      <input type="radio" name="status" value="In Progress" id="s1" class="status-opt">
+      <label for="s1" class="status-label"><span class="status-icon">🟡</span>In progress</label>
+      <input type="radio" name="status" value="Blocked" id="s2" class="status-opt">
+      <label for="s2" class="status-label"><span class="status-icon">🔴</span>I'm blocked</label>
+      <input type="radio" name="status" value="Done" id="s3" class="status-opt">
+      <label for="s3" class="status-label"><span class="status-icon">🟢</span>Done!</label>
+    </div>
+    <div class="field blocker-field" id="blockerField">
+      <label>What's blocking you? <span class="req">*</span></label>
+      <textarea id="blockerText" placeholder="Describe what's blocking you and what you need…"></textarea>
+    </div>
+    <div class="field">
+      <label>Progress update</label>
+      <textarea id="updateText" placeholder="What have you done so far? What's the next step?"></textarea>
+    </div>
+    <div class="divider"></div>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitUpdate()">Send update</button>
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Update sent!</div>
+    <p class="success-sub">Your manager has been notified. Thanks for keeping the team in the loop.</p>
+    <button class="update-again" onclick="showFormAgain()">Submit another update</button>
+  </div>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqUCLnRuwDMPjlby9T64cMgVVogdH2IgWu6PrmuJ5wYTx5zW30xtuVbcieAw1GehH8Fg/exec';
+
+  const params = new URLSearchParams(window.location.search);
+  const projectId = params.get('id');
+  const projectName = params.get('project');
+  const assignee = params.get('assignee');
+  const team = params.get('team');
+  const deadline = params.get('deadline');
+  const description = params.get('description') || '';
+
+  if (!projectId || !projectName) {
+    document.getElementById('noProject').style.display = 'block';
+  } else {
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('projectName').textContent = projectName;
+    document.getElementById('assigneeName').textContent = assignee || '—';
+    document.getElementById('teamName').textContent = team || '—';
+    if (deadline) {
+      const dl = new Date(deadline);
+      const today = new Date(); today.setHours(0,0,0,0);
+      const overdue = dl < today;
+      document.getElementById('deadlineDisplay').textContent = dl.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + (overdue ? ' ⚠ OVERDUE' : '');
+      if (overdue) document.getElementById('deadlineMeta').style.color = '#dc2626';
+    }
+    if (description) {
+      document.getElementById('descCard').style.display = 'block';
+      document.getElementById('descText').textContent = description;
+    }
+  }
+
+  document.querySelectorAll('input[name="status"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const bf = document.getElementById('blockerField');
+      if (r.value === 'Blocked' && r.checked) { bf.classList.add('show'); }
+      else { bf.classList.remove('show'); }
+    });
+  });
+
+  async function submitUpdate() {
+    const status = document.querySelector('input[name="status"]:checked');
+    if (!status) { alert('Please select a status.'); return; }
+    const blocker = document.getElementById('blockerText').value;
+    if (status.value === 'Blocked' && !blocker.trim()) { alert('Please describe what is blocking you.'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = 'Sending…';
+
+    const payload = {
+      type: 'update',
+      id: projectId,
+      project: projectName,
+      assignee, team, deadline,
+      status: status.value,
+      update: document.getElementById('updateText').value,
+      blocker,
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      // Use GET request with URL params to bypass CORS
+      const params = new URLSearchParams({
+        id: payload.id,
+        project: payload.project || '',
+        assignee: payload.assignee || '',
+        team: payload.team || '',
+        deadline: payload.deadline || '',
+        status: payload.status || '',
+        update: payload.update || '',
+        blocker: payload.blocker || ''
+      });
+      const img = new Image();
+      img.src = APPS_SCRIPT_URL + '?' + params.toString();
+    } catch(err) { console.warn('Submit error', err); }
+
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
+    btn.disabled = false; btn.textContent = 'Send update';
+  }
+
+  function showFormAgain() {
+    document.getElementById('formCard').style.display = 'block';
+    document.getElementById('successScreen').classList.remove('show');
+    document.querySelectorAll('input[name="status"]').forEach(r => r.checked = false);
+    document.getElementById('updateText').value = '';
+    document.getElementById('blockerText').value = '';
+    document.getElementById('blockerField').classList.remove('show');
+  }
+</script>
+</body>
+</html>
