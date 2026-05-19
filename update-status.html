@@ -100,7 +100,7 @@
 <body>
 
 <div class="config-notice" id="configNotice" style="display:none">
-  ⚙️ <strong>Setup needed:</strong> Replace <code>YOUR_GOOGLE_APPS_SCRIPT_URL</code> in this file. See <code>SETUP-GUIDE.html</code>.
+  ⚙️ <strong>Setup needed:</strong> Replace <code>https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec</code> in this file. See <code>SETUP-GUIDE.html</code>.
 </div>
 
 <div id="noProject" class="no-project" style="display:none">
@@ -168,7 +168,7 @@
 
 <script>
   // ─── CONFIG ───────────────────────────────────────────────────────────
-  const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec';
   // ──────────────────────────────────────────────────────────────────────
 
   const params = new URLSearchParams(window.location.search);
@@ -202,7 +202,7 @@
     }
   }
 
-  if (APPS_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+  if (APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec') {
     document.getElementById('configNotice').style.display = 'block';
   }
 
@@ -242,7 +242,7 @@
       timestamp: new Date().toISOString()
     };
 
-    if (APPS_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+    if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec') {
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST', mode: 'no-cors',
