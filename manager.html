@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ops Manager — Assign Projects</title>
+<title>Ops Manager</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -33,14 +33,9 @@
   .container { max-width: 860px; margin: 0 auto; padding: 36px 24px 60px; }
   .page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
   .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
-
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 28px; margin-bottom: 24px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 24px; }
   .card-title { font-size: 15px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-  .card-title-badge {
-    font-size: 11px; font-weight: 500; padding: 2px 8px;
-    border-radius: 20px; background: var(--accent-light); color: var(--accent);
-  }
-
+  .card-title-badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; background: var(--accent-light); color: var(--accent); }
   .field { margin-bottom: 18px; }
   label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
   label .req { color: var(--danger); margin-left: 2px; }
@@ -55,46 +50,25 @@
   }
   select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7870' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 13px center;
-    padding-right: 36px; cursor: pointer;
+    background-repeat: no-repeat; background-position: right 13px center; padding-right: 36px; cursor: pointer;
   }
   textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-
-  .btn {
-    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
-    padding: 10px 20px; border-radius: 8px; cursor: pointer;
-    transition: opacity .15s, transform .1s; border: none; letter-spacing: -0.01em;
-  }
+  .btn { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: opacity .15s; border: none; }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { opacity: .9; }
-  .btn-primary:active { transform: scale(.99); }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-  .btn-ghost { background: none; border: 1px solid var(--border); color: var(--text); }
-  .btn-ghost:hover { background: var(--bg); }
-
-  .success-msg {
-    display: none; background: #f0fdf4; border: 1px solid #bbf7d0;
-    border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--success); margin-top: 14px;
-  }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .success-msg { display: none; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--success); margin-top: 14px; line-height: 1.7; }
   .success-msg.show { display: block; }
-
-  /* Project list */
   .project-list { display: flex; flex-direction: column; gap: 10px; }
-  .project-row {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 14px 18px;
-    transition: box-shadow .15s;
-  }
+  .project-row { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; transition: box-shadow .15s; }
   .project-row:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
   .project-info { flex: 1; min-width: 0; }
   .project-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .project-meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
   .meta-chip { display: inline-flex; align-items: center; gap: 4px; }
   .team-tag { font-family: var(--mono); font-size: 11px; padding: 2px 7px; border-radius: 4px; background: var(--accent-light); color: var(--accent); }
-
   .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
   .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
   .badge-notstarted { background: #f1f5f9; color: #475569; }
@@ -105,29 +79,17 @@
   .badge-blocked .badge-dot { background: #ef4444; }
   .badge-done { background: #f0fdf4; color: #166534; }
   .badge-done .badge-dot { background: #22c55e; }
-
+  .priority-badge { font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; }
   .pri-critical { background: #fef2f2; color: #991b1b; }
   .pri-high { background: #fff7ed; color: #9a3412; }
   .pri-medium { background: #fafaf8; color: var(--muted); }
   .pri-low { background: #f8fafc; color: #64748b; }
-  .priority-badge { font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; }
-
   .deadline-overdue { color: #dc2626; font-weight: 500; }
-  .btn-copy {
-    font-family: var(--mono); font-size: 11px; padding: 5px 10px;
-    border: 1px solid var(--border); border-radius: 6px; background: var(--bg);
-    color: var(--muted); cursor: pointer; white-space: nowrap;
-    transition: all .15s; flex-shrink: 0;
-  }
+  .btn-copy { font-family: var(--mono); font-size: 11px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--muted); cursor: pointer; white-space: nowrap; transition: all .15s; flex-shrink: 0; }
   .btn-copy:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
   .btn-copy.copied { border-color: #bbf7d0; color: var(--success); background: #f0fdf4; }
-
   .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
-
-  @media (max-width: 600px) {
-    .row, .row3 { grid-template-columns: 1fr; }
-    .container { padding: 16px; }
-  }
+  @media (max-width: 600px) { .row, .row3 { grid-template-columns: 1fr; } .container { padding: 16px; } }
 </style>
 </head>
 <body>
@@ -189,9 +151,7 @@
         <label>Description / instructions</label>
         <textarea name="description" placeholder="What should this person do? Any context they need…"></textarea>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <button type="submit" class="btn btn-primary" id="submitBtn">Create & get update link</button>
-      </div>
+      <button type="submit" class="btn btn-primary" id="submitBtn">Create &amp; get update link</button>
       <div class="success-msg" id="successMsg"></div>
     </form>
   </div>
@@ -208,59 +168,46 @@
 </div>
 
 <script>
-  // ─── CONFIG ───────────────────────────────────────────────────────────
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec';
-  // The base URL of your update form (update-status.html), so you can copy links
-  // If hosting locally, leave as is. If on GitHub Pages, change to your URL.
-  const UPDATE_FORM_BASE = 'update-status.html';
-  // ──────────────────────────────────────────────────────────────────────
+  const UPDATE_FORM_BASE = 'https://shipping-netizen.github.io/ops-tracker/update-status.html';
 
-  // Load local project list (stored in localStorage for manager's reference)
   let projects = JSON.parse(localStorage.getItem('ops_projects') || '[]');
-
   function saveProjects() { localStorage.setItem('ops_projects', JSON.stringify(projects)); }
 
   function renderProjects() {
     const list = document.getElementById('projectList');
     const empty = document.getElementById('emptyMsg');
     document.getElementById('projectCount').textContent = projects.length;
-    if (projects.length === 0) { empty.style.display = 'block'; list.innerHTML = ''; list.appendChild(empty); return; }
+    if (projects.length === 0) { list.innerHTML = ''; list.appendChild(empty); empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     const today = new Date(); today.setHours(0,0,0,0);
-
-    list.innerHTML = projects.slice().reverse().map((p, ri) => {
-      const i = projects.length - 1 - ri;
+    list.innerHTML = projects.slice().reverse().map(p => {
       const dl = p.deadline ? new Date(p.deadline) : null;
       const overdue = dl && p.status !== 'Done' && dl < today;
-      const dlStr = dl ? dl.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'}) : '—';
+      const dlStr = dl ? dl.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) : '—';
       const statusKey = (p.status||'notstarted').toLowerCase().replace(/\s/g,'');
       const priKey = (p.priority||'medium').toLowerCase();
-      // Build update link with prefilled info
-      const params = new URLSearchParams({ id: p.id, project: p.project, assignee: p.assignee, team: p.team, deadline: p.deadline||'' });
+      const params = new URLSearchParams({id:p.id, project:p.project, assignee:p.assignee, team:p.team, deadline:p.deadline||''});
       const updateLink = UPDATE_FORM_BASE + '?' + params.toString();
-
       return `<div class="project-row">
         <div class="project-info">
           <div class="project-name">${esc(p.project)}</div>
           <div class="project-meta">
             <span class="meta-chip"><span class="team-tag">${esc(p.team)}</span></span>
             <span class="meta-chip">👤 ${esc(p.assignee)}</span>
-            <span class="meta-chip ${overdue ? 'deadline-overdue' : ''}">📅 ${dlStr}${overdue?' ⚠':''}</span>
-            <span class="meta-chip"><span class="priority-badge pri-${priKey}">${esc(p.priority)}</span></span>
+            <span class="meta-chip ${overdue?'deadline-overdue':''}">📅 ${dlStr}${overdue?' ⚠':''}</span>
+            <span class="priority-badge pri-${priKey}">${esc(p.priority)}</span>
           </div>
         </div>
         <span class="badge badge-${statusKey}"><span class="badge-dot"></span>${esc(p.status||'Not started')}</span>
-        <button class="btn-copy" onclick="copyLink('${updateLink}', this)" title="Copy update link to send to ${esc(p.assignee)}">Copy link</button>
+        <button class="btn-copy" onclick="copyLink('${updateLink}',this)">Copy link</button>
       </div>`;
     }).join('');
   }
 
   function copyLink(url, btn) {
-    // Build absolute URL
-    const abs = new URL(url, window.location.href).href;
-    navigator.clipboard.writeText(abs).then(() => {
-      btn.textContent = '✓ Copied!';
-      btn.classList.add('copied');
+    navigator.clipboard.writeText(url).then(() => {
+      btn.textContent = '✓ Copied!'; btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
     });
   }
@@ -281,32 +228,26 @@
     payload.createdAt = new Date().toISOString();
     payload.type = 'assign';
 
-    // Save to Google Sheet
-    if (APPS_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-      try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch(err) { console.warn('Sheet sync failed', err); }
-    }
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+    } catch(err) { console.warn('Sheet sync failed', err); }
 
-    // Save locally for link generation
     projects.push(payload);
     saveProjects();
     renderProjects();
 
-    // Show success with the update link
-    const params = new URLSearchParams({ id: payload.id, project: payload.project, assignee: payload.assignee, team: payload.team, deadline: payload.deadline||'' });
-    const link = new URL(UPDATE_FORM_BASE + '?' + params.toString(), window.location.href).href;
-    msg.innerHTML = `✓ Project created! <strong>Send this link to ${esc(payload.assignee)}:</strong><br><span style="font-family:var(--mono);font-size:12px;word-break:break-all;">${esc(link)}</span>`;
+    const params = new URLSearchParams({id:payload.id, project:payload.project, assignee:payload.assignee, team:payload.team, deadline:payload.deadline||''});
+    const link = UPDATE_FORM_BASE + '?' + params.toString();
+    msg.innerHTML = `✓ Project created! Send this link to <strong>${esc(payload.assignee)}</strong>:<br><span style="font-family:var(--mono);font-size:12px;word-break:break-all;color:#1a1917">${esc(link)}</span>`;
     msg.classList.add('show');
 
     e.target.reset();
     btn.disabled = false; btn.textContent = 'Create & get update link';
   });
-
 
   renderProjects();
 </script>
