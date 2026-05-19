@@ -34,12 +34,6 @@
   .page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
   .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
 
-  .config-notice {
-    background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;
-    padding: 14px 18px; font-size: 13px; color: #92400e; margin-bottom: 24px; line-height: 1.7;
-  }
-  .config-notice code { font-family: var(--mono); background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
-
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 28px; margin-bottom: 24px; }
   .card-title { font-size: 15px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
   .card-title-badge {
@@ -149,10 +143,6 @@
 <div class="container">
   <div class="page-title">Assign a project</div>
   <p class="page-sub">Create a task, assign it to someone, set a deadline. They'll get a personal update link to report back.</p>
-
-  <div class="config-notice" id="configNotice">
-    ⚙️ <strong>Setup needed:</strong> Replace <code>https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec</code> near the bottom of this file. See <code>SETUP-GUIDE.html</code>.
-  </div>
 
   <div class="card">
     <div class="card-title">New project assignment</div>
@@ -292,7 +282,7 @@
     payload.type = 'assign';
 
     // Save to Google Sheet
-    if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec') {
+    if (APPS_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST', mode: 'no-cors',
@@ -317,9 +307,6 @@
     btn.disabled = false; btn.textContent = 'Create & get update link';
   });
 
-  if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec') {
-    document.getElementById('configNotice').style.display = 'none';
-  }
 
   renderProjects();
 </script>
