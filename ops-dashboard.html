@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ops Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --border: #e2e0d8;
+    --text: #1a1917;
+    --muted: #7a7870;
+    --accent: #2563eb;
+    --accent-light: #eff4ff;
+    --radius: 10px;
+    --mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── Top bar ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .btn-refresh {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-refresh:hover { background: var(--bg); }
+  .last-updated { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+  /* ── Layout ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 28px 28px 60px; }
+
+  /* ── Stat cards ── */
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .stat-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .stat-blocked .stat-value { color: #dc2626; }
+  .stat-overdue .stat-value { color: #ea580c; }
+  .stat-done .stat-value { color: #16a34a; }
+
+  /* ── Filters ── */
+  .filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .filter-label { font-size: 12px; color: var(--muted); margin-right: 4px; }
+  .filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .search-wrap { margin-left: auto; }
+  .search-input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    width: 200px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+
+  /* ── Table ── */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: var(--bg); }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  th:hover { color: var(--text); }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafaf8; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .badge-planning { background: #f1f5f9; color: #475569; }
+  .badge-planning .badge-dot { background: #94a3b8; }
+  .badge-inprogress { background: #fffbeb; color: #92400e; }
+  .badge-inprogress .badge-dot { background: #f59e0b; }
+  .badge-blocked { background: #fef2f2; color: #991b1b; }
+  .badge-blocked .badge-dot { background: #ef4444; }
+  .badge-done { background: #f0fdf4; color: #166534; }
+  .badge-done .badge-dot { background: #22c55e; }
+
+  .priority-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .pri-critical { background: #fef2f2; color: #991b1b; }
+  .pri-high { background: #fff7ed; color: #9a3412; }
+  .pri-medium { background: #fafaf8; color: var(--muted); }
+  .pri-low { background: #f8fafc; color: #64748b; }
+
+  .overdue-row td { background: #fffbf7; }
+  .team-chip {
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+  .deadline-cell { font-family: var(--mono); font-size: 12px; }
+  .deadline-overdue { color: #dc2626; font-weight: 500; }
+  .update-text {
+    max-width: 240px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .empty-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+
+  /* ── Config notice ── */
+  .config-notice {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #92400e;
+    margin-bottom: 20px;
+    line-height: 1.7;
+  }
+  .config-notice code {
+    font-family: var(--mono);
+    background: rgba(0,0,0,.07);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .loading { text-align: center; padding: 48px; color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 768px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .container { padding: 16px; }
+    .topbar { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Ops Dashboard
+  </div>
+  <div class="topbar-right">
+    <span class="last-updated" id="lastUpdated">—</span>
+    <button class="btn-refresh" onclick="loadData()">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="config-notice" id="configNotice">
+    ⚙️ <strong>Setup needed:</strong> Replace <code>YOUR_PUBLISHED_SHEET_CSV_URL</code> in this file with the published CSV URL from your Google Sheet. See <code>SETUP-GUIDE.html</code> for step-by-step instructions.
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Total projects</div>
+      <div class="stat-value" id="statTotal">—</div>
+      <div class="stat-sub">across all teams</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">In progress</div>
+      <div class="stat-value" id="statInProgress">—</div>
+      <div class="stat-sub">active now</div>
+    </div>
+    <div class="stat stat-blocked">
+      <div class="stat-label">Blocked</div>
+      <div class="stat-value" id="statBlocked">—</div>
+      <div class="stat-sub">need attention</div>
+    </div>
+    <div class="stat stat-overdue">
+      <div class="stat-label">Overdue</div>
+      <div class="stat-value" id="statOverdue">—</div>
+      <div class="stat-sub">past deadline</div>
+    </div>
+    <div class="stat stat-done">
+      <div class="stat-label">Done</div>
+      <div class="stat-value" id="statDone">—</div>
+      <div class="stat-sub">completed</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters" id="teamFilters">
+    <span class="filter-label">Team:</span>
+    <button class="filter-btn active" data-team="all" onclick="setTeamFilter('all', this)">All</button>
+    <!-- Team buttons inserted dynamically -->
+    <span class="filter-label" style="margin-left:8px;">Status:</span>
+    <button class="filter-btn active" data-status="all" onclick="setStatusFilter('all', this)">All</button>
+    <button class="filter-btn" data-status="Blocked" onclick="setStatusFilter('Blocked', this)">🔴 Blocked</button>
+    <button class="filter-btn" data-status="In Progress" onclick="setStatusFilter('In Progress', this)">🟡 In Progress</button>
+    <button class="filter-btn" data-status="Planning" onclick="setStatusFilter('Planning', this)">⚪ Planning</button>
+    <button class="filter-btn" data-status="Done" onclick="setStatusFilter('Done', this)">🟢 Done</button>
+    <div class="search-wrap">
+      <input type="text" class="search-input" placeholder="Search projects…" oninput="setSearch(this.value)">
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="loading" id="loadingState">Loading project data…</div>
+    <table id="projectTable" style="display:none">
+      <thead>
+        <tr>
+          <th onclick="sortBy('timestamp')">Date ↕</th>
+          <th onclick="sortBy('team')">Team ↕</th>
+          <th onclick="sortBy('project')">Project ↕</th>
+          <th onclick="sortBy('owner')">Owner ↕</th>
+          <th onclick="sortBy('status')">Status ↕</th>
+          <th onclick="sortBy('priority')">Priority ↕</th>
+          <th onclick="sortBy('deadline')">Deadline ↕</th>
+          <th>Latest update</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-title">No projects found</div>
+      <p>Try adjusting your filters, or data may not be loaded yet.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────────────────────
+  // Paste your Google Sheet's published CSV URL here.
+  // Sheet → File → Share → Publish to web → CSV → Copy link
+  const SHEET_CSV_URL = 'YOUR_PUBLISHED_SHEET_CSV_URL';
+  // ──────────────────────────────────────────────────────────────────────
+
+  let allRows = [];
+  let teamFilter = 'all';
+  let statusFilter = 'all';
+  let searchQuery = '';
+  let sortKey = 'timestamp';
+  let sortDir = -1;
+
+  // Sample / demo data for when sheet isn't configured yet
+  const DEMO_DATA = [
+    { timestamp: '2025-05-15T09:00:00Z', name: 'Alice Wong', team: 'Sales', project: 'Q2 Enterprise Outreach', owner: 'Alice Wong', deadline: '2025-06-30', priority: 'High', status: 'In Progress', update: 'Contacted 12 new leads this week. Pipeline looking strong.', blocker: '' },
+    { timestamp: '2025-05-14T14:30:00Z', name: 'Ben Tan', team: 'Warehouse', project: 'Inventory System Upgrade', owner: 'Ben Tan', deadline: '2025-05-20', priority: 'Critical', status: 'Blocked', update: 'Waiting on IT to approve server access.', blocker: 'Need IT approval for server credentials — escalate to ops manager.' },
+    { timestamp: '2025-05-13T11:00:00Z', name: 'Clara Lim', team: 'Business Development', project: 'Partner Portal Launch', owner: 'Clara Lim', deadline: '2025-07-01', priority: 'High', status: 'Planning', update: 'Finalising requirements doc with product team.', blocker: '' },
+    { timestamp: '2025-05-16T08:00:00Z', name: 'David Park', team: 'Internal Operations', project: 'HR Policy Update 2025', owner: 'David Park', deadline: '2025-05-10', priority: 'Medium', status: 'Done', update: 'All policies reviewed and signed off by legal.', blocker: '' },
+    { timestamp: '2025-05-12T16:00:00Z', name: 'Eva Ng', team: 'Finance', project: 'Budget Reforecast', owner: 'Eva Ng', deadline: '2025-05-25', priority: 'High', status: 'In Progress', update: 'Completed Sales and BD actuals. Waiting on warehouse numbers.', blocker: '' },
+    { timestamp: '2025-05-11T10:00:00Z', name: 'Frank Ho', team: 'Sales', project: 'CRM Data Clean-up', owner: 'Frank Ho', deadline: '2025-04-30', priority: 'Low', status: 'Blocked', update: 'Need access to legacy database export.', blocker: 'No access to legacy CRM — need IT to provide export file.' },
+  ];
+
+  async function loadData() {
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('projectTable').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
+
+    if (SHEET_CSV_URL === 'YOUR_PUBLISHED_SHEET_CSV_URL') {
+      document.getElementById('configNotice').style.display = 'block';
+      allRows = DEMO_DATA;
+      renderAll();
+      document.getElementById('lastUpdated').textContent = 'demo data';
+      return;
+    }
+
+    document.getElementById('configNotice').style.display = 'none';
+    try {
+      const res = await fetch(SHEET_CSV_URL + '&t=' + Date.now());
+      const text = await res.text();
+      allRows = parseCSV(text);
+      document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+      renderAll();
+    } catch (err) {
+      document.getElementById('loadingState').textContent = 'Failed to load data. Check your sheet URL and make sure it is published.';
+    }
+  }
+
+  function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase().replace(/\s+/g, ''));
+    // Expected headers (case-insensitive): timestamp, name, team, project, owner, deadline, priority, status, update, blocker
+    const headerMap = {
+      'timestamp': 'timestamp', 'name': 'name', 'team': 'team',
+      'projectname': 'project', 'project': 'project',
+      'projectowner': 'owner', 'owner': 'owner',
+      'deadline': 'deadline', 'priority': 'priority', 'status': 'status',
+      'progressupdate': 'update', 'update': 'update', 'blocker': 'blocker'
+    };
+    return lines.slice(1).filter(l => l.trim()).map(line => {
+      const vals = parseCSVLine(line);
+      const obj = {};
+      headers.forEach((h, i) => {
+        const key = headerMap[h] || h;
+        obj[key] = (vals[i] || '').trim();
+      });
+      return obj;
+    });
+  }
+
+  function parseCSVLine(line) {
+    const result = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') { inQ = !inQ; }
+      else if (line[i] === ',' && !inQ) { result.push(cur); cur = ''; }
+      else { cur += line[i]; }
+    }
+    result.push(cur);
+    return result;
+  }
+
+  function renderAll() {
+    document.getElementById('loadingState').style.display = 'none';
+
+    const teams = [...new Set(allRows.map(r => r.team).filter(Boolean))].sort();
+    const teamFiltersEl = document.getElementById('teamFilters');
+    const existingBtns = teamFiltersEl.querySelectorAll('[data-team]:not([data-team="all"])');
+    existingBtns.forEach(b => b.remove());
+    const allBtn = teamFiltersEl.querySelector('[data-team="all"]');
+    teams.forEach(t => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-btn' + (teamFilter === t ? ' active' : '');
+      btn.dataset.team = t;
+      btn.textContent = t;
+      btn.onclick = () => setTeamFilter(t, btn);
+      allBtn.after(btn);
+    });
+
+    let rows = allRows.filter(r => {
+      if (teamFilter !== 'all' && r.team !== teamFilter) return false;
+      if (statusFilter !== 'all' && r.status !== statusFilter) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        return (r.project||'').toLowerCase().includes(q) ||
+               (r.owner||'').toLowerCase().includes(q) ||
+               (r.name||'').toLowerCase().includes(q) ||
+               (r.team||'').toLowerCase().includes(q);
+      }
+      return true;
+    });
+
+    rows.sort((a, b) => {
+      let va = a[sortKey] || '', vb = b[sortKey] || '';
+      return va < vb ? sortDir : va > vb ? -sortDir : 0;
+    });
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const isOverdue = r => r.deadline && r.status !== 'Done' && new Date(r.deadline) < today;
+
+    // Stats
+    document.getElementById('statTotal').textContent = allRows.length;
+    document.getElementById('statInProgress').textContent = allRows.filter(r => r.status === 'In Progress').length;
+    document.getElementById('statBlocked').textContent = allRows.filter(r => r.status === 'Blocked').length;
+    document.getElementById('statOverdue').textContent = allRows.filter(isOverdue).length;
+    document.getElementById('statDone').textContent = allRows.filter(r => r.status === 'Done').length;
+
+    const tbody = document.getElementById('tableBody');
+    if (rows.length === 0) {
+      document.getElementById('projectTable').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+    document.getElementById('projectTable').style.display = 'table';
+    document.getElementById('emptyState').style.display = 'none';
+
+    tbody.innerHTML = rows.map(r => {
+      const od = isOverdue(r);
+      const statusKey = (r.status||'').replace(/\s/g,'').toLowerCase();
+      const priKey = (r.priority||'medium').toLowerCase();
+      const dl = r.deadline ? new Date(r.deadline) : null;
+      const dlStr = dl ? dl.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) : '—';
+      const ts = r.timestamp ? new Date(r.timestamp).toLocaleDateString('en-GB', {day:'2-digit',month:'short'}) : '—';
+      const updateText = r.blocker ? '⚠ ' + r.blocker : (r.update || '—');
+      return `<tr class="${od ? 'overdue-row' : ''}">
+        <td class="deadline-cell">${ts}</td>
+        <td><span class="team-chip">${esc(r.team||'—')}</span></td>
+        <td style="font-weight:500;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.project||'—')}</td>
+        <td>${esc(r.owner||'—')}</td>
+        <td><span class="badge badge-${statusKey}"><span class="badge-dot"></span>${esc(r.status||'—')}</span></td>
+        <td><span class="priority-badge pri-${priKey}">${esc(r.priority||'Medium')}</span></td>
+        <td class="deadline-cell ${od ? 'deadline-overdue' : ''}">${dlStr}${od ? ' ⚠' : ''}</td>
+        <td><div class="update-text" title="${esc(updateText)}">${esc(updateText)}</div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function setTeamFilter(val, el) {
+    teamFilter = val;
+    document.querySelectorAll('[data-team]').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderAll();
+  }
+  function setStatusFilter(val, el) {
+    statusFilter = val;
+    document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    renderAll();
+  }
+  function setSearch(val) { searchQuery = val; renderAll(); }
+  function sortBy(key) {
+    if (sortKey === key) sortDir *= -1;
+    else { sortKey = key; sortDir = 1; }
+    renderAll();
+  }
+
+  loadData();
+</script>
+</body>
+</html>
