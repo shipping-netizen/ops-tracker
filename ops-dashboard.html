@@ -177,13 +177,19 @@
   function parseCSV(text) {
     const lines = text.trim().split('\n');
     if (lines.length < 2) return [];
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,'').toLowerCase().replace(/[\s_-]+/g,''));
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,'').toLowerCase().replace(/[\s_\-\/]+/g,''));
     const keyMap = {
-      'projectid':'id','createdat':'timestamp','projectname':'project','project':'project',
-      'assignedto':'assignee','assignee':'assignee','team':'team','duedate':'deadline',
-      'deadline':'deadline','priority':'priority','description':'description',
-      'status':'status','progressupdate':'update','update':'update',
-      'blocker':'blocker','lastupdated':'lastupdated'
+      'projectid':'id','createdat':'timestamp','createdate':'timestamp',
+      'projectname':'project','project':'project','name':'project',
+      'assignedto':'assignee','assignee':'assignee','owner':'assignee',
+      'team':'team',
+      'duedate':'deadline','deadline':'deadline','due':'deadline',
+      'priority':'priority',
+      'description':'description','instructions':'description',
+      'status':'status',
+      'progressupdate':'update','update':'update','progress':'update','latestupdated':'update',
+      'blocker':'blocker','blockers':'blocker',
+      'lastupdated':'lastupdated'
     };
     return lines.slice(1).filter(l => l.trim()).map(line => {
       const vals = parseCSVLine(line);
