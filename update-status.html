@@ -88,20 +88,9 @@
 
   .no-project { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
   .no-project strong { display: block; font-size: 16px; color: var(--text); margin-bottom: 8px; }
-
-  .config-notice {
-    background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;
-    padding: 14px 18px; font-size: 13px; color: #92400e; margin-bottom: 20px; line-height: 1.7;
-    width: 100%; max-width: 520px;
-  }
-  .config-notice code { font-family: var(--mono); background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
 </style>
 </head>
 <body>
-
-<div class="config-notice" id="configNotice" style="display:none">
-  ⚙️ <strong>Setup needed:</strong> Replace <code>https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec</code> in this file. See <code>SETUP-GUIDE.html</code>.
-</div>
 
 <div id="noProject" class="no-project" style="display:none">
   <strong>No project found</strong>
@@ -203,7 +192,7 @@
   }
 
   if (APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec') {
-    document.getElementById('configNotice').style.display = 'block';
+    
   }
 
   document.querySelectorAll('input[name="status"]').forEach(r => {
