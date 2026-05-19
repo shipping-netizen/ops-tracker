@@ -151,7 +151,7 @@
   <p class="page-sub">Create a task, assign it to someone, set a deadline. They'll get a personal update link to report back.</p>
 
   <div class="config-notice" id="configNotice">
-    ⚙️ <strong>Setup needed:</strong> Replace <code>YOUR_GOOGLE_APPS_SCRIPT_URL</code> near the bottom of this file. See <code>SETUP-GUIDE.html</code>.
+    ⚙️ <strong>Setup needed:</strong> Replace <code>https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec</code> near the bottom of this file. See <code>SETUP-GUIDE.html</code>.
   </div>
 
   <div class="card">
@@ -219,7 +219,7 @@
 
 <script>
   // ─── CONFIG ───────────────────────────────────────────────────────────
-  const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec';
   // The base URL of your update form (update-status.html), so you can copy links
   // If hosting locally, leave as is. If on GitHub Pages, change to your URL.
   const UPDATE_FORM_BASE = 'update-status.html';
@@ -292,7 +292,7 @@
     payload.type = 'assign';
 
     // Save to Google Sheet
-    if (APPS_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+    if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec') {
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST', mode: 'no-cors',
@@ -317,7 +317,7 @@
     btn.disabled = false; btn.textContent = 'Create & get update link';
   });
 
-  if (APPS_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+  if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbya9B77o20Y4u8q7tP5TSrASgF0UHD0hjndBcxh10Zo1UhbhzTWSgIz-BaBqLZrTbk3qw/exec') {
     document.getElementById('configNotice').style.display = 'none';
   }
 
